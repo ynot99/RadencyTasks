@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeTask1", "HomeTask1\Home
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeTask2", "HomeTask2\HomeTask2.csproj", "{D15007C8-99FC-43EE-BE9F-4F789AE8F06A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeTask2.DataAccessLayer", "HomeTask2.DataAccessLayer\HomeTask2.DataAccessLayer.csproj", "{417C91F9-0FF6-45D7-AF78-67BB8786E9E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeTask2.DataAccessLayer", "HomeTask2.DataAccessLayer\HomeTask2.DataAccessLayer.csproj", "{417C91F9-0FF6-45D7-AF78-67BB8786E9E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeTask2.BusinessLogicLayer", "HomeTask2.BusinessLogicLayer\HomeTask2.BusinessLogicLayer.csproj", "{663887B0-9DC8-4828-A485-B99ED2C326E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeTask2.BusinessLogicLayer", "HomeTask2.BusinessLogicLayer\HomeTask2.BusinessLogicLayer.csproj", "{663887B0-9DC8-4828-A485-B99ED2C326E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeTask2.Core", "HomeTask2.Core\HomeTask2.Core.csproj", "{5B460391-50C5-4B1F-82CD-64EED84D6A22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{663887B0-9DC8-4828-A485-B99ED2C326E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{663887B0-9DC8-4828-A485-B99ED2C326E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{663887B0-9DC8-4828-A485-B99ED2C326E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B460391-50C5-4B1F-82CD-64EED84D6A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B460391-50C5-4B1F-82CD-64EED84D6A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B460391-50C5-4B1F-82CD-64EED84D6A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B460391-50C5-4B1F-82CD-64EED84D6A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

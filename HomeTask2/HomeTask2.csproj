@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeTask2.BusinessLogicLayer\HomeTask2.BusinessLogicLayer.csproj" />
+    <ProjectReference Include="..\HomeTask2.Core\HomeTask2.Core.csproj" />
   </ItemGroup>
 
 </Project>

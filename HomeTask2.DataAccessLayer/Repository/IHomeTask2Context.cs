@@ -5,8 +5,8 @@ namespace HomeTask2.DataAccessLayer.Repository
 {
     internal interface IHomeTask2Context
     {
-        DbSet<Book> Books { get; set; }
-        DbSet<Review> Reviews { get; set; }
-        DbSet<Rating> Ratings { get; set; }
+        internal DbSet<Book> Books { get; set; }
+        internal DbSet<Review> Reviews { get; set; }
+        internal DbSet<Rating> Ratings { get; set; }
     }
 }

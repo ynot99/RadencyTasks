@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HomeTask2.Core.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HomeTask2.Controllers
 {
@@ -6,54 +7,31 @@ namespace HomeTask2.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly HomeTask2.BusinessLogicLayer.BookBLL _bookBLL;
+        private readonly HomeTask2.BusinessLogicLayer.IBookBLL _bookBLL;
 
-        public BooksController(HomeTask2.BusinessLogicLayer.BookBLL bookBLL)
+        public BooksController(HomeTask2.BusinessLogicLayer.IBookBLL bookBLL)
         {
             _bookBLL = bookBLL;
         }
 
         // TODO ### 1
         // GET: api/Books?order=author
+        // TODO it must return Task<TResult>
         [HttpGet]
-        public async Task<ActionResult<object>> GetBookItemsInOrder([FromQuery] string? order)
+        public async Task<ActionResult<List<BookDTO>>> GetBookItemsInOrder([FromQuery] string? order)
         {
-            return await _bookBLL.GetAllBooks();
-            //IQueryable<BookRatingReviewDTO> query = _mapper.ProjectTo<BookRatingReviewDTO>(_context.BookItems);
-            //return order switch
-            //{
-            //    "author" => await query.OrderBy(book => book.Author).ToListAsync(),
-            //    "title" => await query.OrderBy(book => book.Title).ToListAsync(),
-            //    _ => await query.ToListAsync(),
-            //};
+            return await _bookBLL.GetAllBooks(order);
         }
 
-        // TODO ### 5
+        //TODO ### 5
         // POST: api/Books/save
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //    [HttpPost("save")]
-        //    public async Task<ActionResult<Book>> PostBook(Book book)
-        //    {
-        //        if (book.Id == 0)
-        //        {
-        //            _context.BookItems.Add(book);
-        //            await _context.SaveChangesAsync();
-        //            return CreatedAtAction("GetBook", new { id = book.Id }, book);
-        //        }
-        //        else
-        //        {
-        //            Book? existingBook = await _context.BookItems.FindAsync(book.Id);
-        //            if (existingBook == null)
-        //                return NotFound();
-        //            existingBook.Title = book.Title;
-        //            existingBook.Cover = book.Cover;
-        //            existingBook.Content = book.Content;
-        //            existingBook.Author = book.Author;
-        //            existingBook.Genre = book.Genre;
-        //            await _context.SaveChangesAsync();
-        //            return book;
-        //        }
-        //    }
+        [HttpPost("save")]
+        public async Task<ActionResult<BookDTO>> PostBook(BookDTO book)
+        {
+            // TODO return NotFound if book doesn't exist in DB using overver pattern
+            return await _bookBLL.SaveBook(book);
+        }
 
         //    // TODO ### 7
         //    // GET: api/Books/5/rate

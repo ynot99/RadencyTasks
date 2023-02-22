@@ -4,13 +4,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeTask2.DataAccessLayer
 {
-    internal static class DependencyInjection
+    public static class DependencyInjectionDAL
     {
-        internal static IServiceCollection ImplementPersistence(IServiceCollection services)
+        public static IServiceCollection ConfigureServicesDAL(this
+            IServiceCollection services)
         {
             services.AddDbContext<HomeTask2Context>(
                 options => options.UseInMemoryDatabase("HomeTask2"));
 
+            services.AddScoped<IBookDAL, BookDAL>();
             services.AddScoped<IHomeTask2Context, HomeTask2Context>();
 
             return services;

@@ -1,6 +1,6 @@
-﻿namespace HomeTask2.BusinessLogicLayer.Models
+﻿namespace HomeTask2.Core.DTOs
 {
-    public class BookModel
+    public class BookDTO
     {
         public long Id { get; set; }
         public string? Title { get; set; }

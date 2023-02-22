@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HomeTask2.Core\HomeTask2.Core.csproj" />
+  </ItemGroup>
+
 </Project>

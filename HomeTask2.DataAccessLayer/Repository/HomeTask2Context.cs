@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeTask2.DataAccessLayer.Repository
 {
-    public class HomeTask2Context : DbContext, IHomeTask2Context
+    internal class HomeTask2Context : DbContext, IHomeTask2Context
     {
         public HomeTask2Context(DbContextOptions<HomeTask2Context> options)
             : base(options)

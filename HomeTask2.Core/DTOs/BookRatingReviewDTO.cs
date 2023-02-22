@@ -1,4 +1,4 @@
-﻿namespace HomeTask2.BusinessLogicLayer.DTOs
+﻿namespace HomeTask2.Core.DTOs
 {
     public class BookRatingReviewDTO
     {

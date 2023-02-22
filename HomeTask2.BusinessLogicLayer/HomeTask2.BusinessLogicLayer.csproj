@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HomeTask2.Core\HomeTask2.Core.csproj" />
     <ProjectReference Include="..\HomeTask2.DataAccessLayer\HomeTask2.DataAccessLayer.csproj" />
   </ItemGroup>
 

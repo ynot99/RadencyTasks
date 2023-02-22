@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using HomeTask2.BusinessLogicLayer.Models;
+using HomeTask2.Core.DTOs;
 
 namespace HomeTask2.BusinessLogicLayer.Validators
 {
-    public class RatingValidator : AbstractValidator<RatingModel>
+    public class RatingValidator : AbstractValidator<RatingDTO>
     {
         public RatingValidator()
         {
