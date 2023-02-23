@@ -1,6 +1,6 @@
 ﻿namespace HomeTask2.Core.DTOs
 {
-    public class BookRatingReviewDTO
+    public class BookRatingAvgReviewCntDTO
     {
         public long Id { get; set; }
         public string? Title { get; set; }
