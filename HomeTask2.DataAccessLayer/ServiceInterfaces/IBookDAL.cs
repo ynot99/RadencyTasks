@@ -5,10 +5,13 @@ namespace HomeTask2.DataAccessLayer.ServiceInterfaces
 {
     public interface IBookDAL
     {
-        public Task<List<BookRatingAvgReviewCntDTO>> GetAllInOrder(string? order);
-        public Task<List<BookRatingAvgReviewCntDTO>> GetLimitByGenreAndMoreThanReviews(
-            int limit, long reviewsCount, string? genre);
-        public Task<BookWithRatingAndReviewListDTO> GetByIdDetailedWithRatingAndReviews(long id);
-        public Task<Book> SaveOrModify(BookDTO book);
+        public Task<List<BookRatingAvgReviewCntDTO>> GetAllRatingAvgReviewCntInOrder(string? order);
+        public Task<List<BookRatingAvgReviewCntDTO>> TakeBooksByCntRatingAvgByReviewCntByGenre(
+            int bookCount, long reviewCount, string? genre);
+        public Task<BookRatingAvgReviewListDTO> GetByIdDetailedWithRatingAndReviews(long id);
+        public Task<Book> GetById(long id);
+        public Task<Book> Update(BookDTO DTObook);
+        public Task<Book> Create(BookDTO DTObook);
+        public Task Delete(long id);
     }
 }

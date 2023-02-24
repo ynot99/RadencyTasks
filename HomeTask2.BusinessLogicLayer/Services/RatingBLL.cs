@@ -5,7 +5,7 @@ using HomeTask2.Core.DTOs;
 using HomeTask2.Core.Exceptions;
 using HomeTask2.DataAccessLayer.Repository.Entities;
 using HomeTask2.DataAccessLayer.ServiceInterfaces;
-using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace HomeTask2.BusinessLogicLayer.Services
 {
@@ -22,26 +22,33 @@ namespace HomeTask2.BusinessLogicLayer.Services
             _validator = validator;
         }
 
-        public async Task<ActionResult<RatingDTO>> RateBook(long bookId, RatingScoreDTO ratingScoreDTO)
+        public async Task<ResponseDTO<RatingDTO>> RateBook(long bookId, RatingScoreDTO DTOratingScore)
         {
             try
             {
-                _validator.ValidateAndThrow(ratingScoreDTO);
+                await _validator.ValidateAndThrowAsync(DTOratingScore);
             }
             catch (ValidationException ex)
             {
-                throw new ValidationFailedException(ex.Message);
+                return new ResponseDTO<RatingDTO>(
+                    HttpStatusCode.BadRequest,
+                    ex.Message, _mapper.Map<RatingScoreDTO, RatingDTO>(DTOratingScore));
             }
             Rating? rating;
             try
             {
-                rating = await _DAL.RateBook(bookId, ratingScoreDTO);
+                rating = await _DAL.CreateByBookId(bookId, DTOratingScore);
             }
             catch (EntityNotFoundException ex)
             {
-                throw new EntityNotFoundException(ex.Message);
+                return new ResponseDTO<RatingDTO>(
+                    HttpStatusCode.NotFound,
+                    ex.Message, _mapper.Map<RatingScoreDTO, RatingDTO>(DTOratingScore));
             }
-            return _mapper.Map<Rating, RatingDTO>(rating);
+            return new ResponseDTO<RatingDTO>(
+                HttpStatusCode.Created,
+                $"Successfully created a new rating for a book with id {bookId}.",
+                _mapper.Map<Rating, RatingDTO>(rating));
         }
     }
 }

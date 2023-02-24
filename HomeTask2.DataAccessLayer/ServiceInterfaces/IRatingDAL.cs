@@ -5,6 +5,9 @@ namespace HomeTask2.DataAccessLayer.ServiceInterfaces
 {
     public interface IRatingDAL
     {
-        public Task<Rating> RateBook(long bookId, RatingScoreDTO score);
+        public Task<List<Rating>> GetAll();
+        public Task<decimal> GetAverageScoreByBookId(long bookId);
+
+        public Task<Rating> CreateByBookId(long bookId, RatingScoreDTO score);
     }
 }

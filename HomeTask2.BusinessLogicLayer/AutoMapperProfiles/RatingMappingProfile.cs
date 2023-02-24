@@ -9,6 +9,7 @@ namespace HomeTask2.BusinessLogicLayer.AutoMapperProfiles
         public RatingMappingProfile()
         {
             CreateMap<Rating, RatingDTO>();
+            CreateMap<RatingScoreDTO, RatingDTO>();
         }
     }
 }

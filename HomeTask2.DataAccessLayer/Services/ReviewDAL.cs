@@ -15,11 +15,13 @@ namespace HomeTask2.DataAccessLayer.Services
             _context = context;
         }
 
-        public async Task<Review> ReviewBook(long bookId, ReviewContentDTO reviewContentDTO)
+        public async Task<Review> CreateByBookId(long bookId, ReviewContentDTO reviewContentDTO)
         {
             Book? existingBook = await _context.Books.FindAsync(bookId);
             if (existingBook == null)
+            {
                 throw new EntityNotFoundException();
+            }
 
             Review newReview = new()
             {

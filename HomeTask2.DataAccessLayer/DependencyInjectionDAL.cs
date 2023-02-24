@@ -13,11 +13,16 @@ namespace HomeTask2.DataAccessLayer
         {
             services.AddDbContext<HomeTask2Context>(
                 options => options.UseInMemoryDatabase("HomeTask2"));
-            services.AddScoped<IHomeTask2Context, HomeTask2Context>();
+            services.AddTransient<DataSeeder>();
 
             services.AddScoped<IBookDAL, BookDAL>();
             services.AddScoped<IRatingDAL, RatingDAL>();
             services.AddScoped<IReviewDAL, ReviewDAL>();
+
+            var scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
+            using var scope = scopeFactory?.CreateScope();
+            var dataSeeder = scope?.ServiceProvider.GetService<DataSeeder>();
+            dataSeeder?.Seed();
 
             return services;
         }

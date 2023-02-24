@@ -5,6 +5,6 @@ namespace HomeTask2.DataAccessLayer.ServiceInterfaces
 {
     public interface IReviewDAL
     {
-        public Task<Review> ReviewBook(long bookId, ReviewContentDTO reviewContentDTO);
+        public Task<Review> CreateByBookId(long bookId, ReviewContentDTO reviewContentDTO);
     }
 }

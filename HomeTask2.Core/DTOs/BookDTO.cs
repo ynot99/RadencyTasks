@@ -2,7 +2,7 @@
 {
     public class BookDTO
     {
-        public long Id { get; set; }
+        public long? Id { get; set; }
         public string? Title { get; set; }
         public string? Cover { get; set; }
         public string? Content { get; set; }

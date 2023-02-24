@@ -1,7 +1,7 @@
 ﻿using HomeTask2.BusinessLogicLayer.ServiceInterfaces;
 using HomeTask2.Core.DTOs;
-using HomeTask2.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace HomeTask2.Controllers
 {
@@ -12,170 +12,136 @@ namespace HomeTask2.Controllers
         private readonly IBookBLL _bookBLL;
         private readonly IRatingBLL _ratingBLL;
         private readonly IReviewBLL _reviewBLL;
+        private readonly IConfiguration _configuration;
 
-        public BooksController(IBookBLL bookBLL, IRatingBLL ratingBLL, IReviewBLL reviewBLL)
+        public BooksController(IBookBLL bookBLL, IRatingBLL ratingBLL, IReviewBLL reviewBLL,
+            IConfiguration configuration)
         {
             _bookBLL = bookBLL;
             _ratingBLL = ratingBLL;
             _reviewBLL = reviewBLL;
+            _configuration = configuration;
         }
 
-        // ### 1
+        // ### 1. Get all books. Order by provided value (title or author).
         // GET: api/Books?order=author|title
         [HttpGet]
         public async Task<ActionResult<List<BookRatingAvgReviewCntDTO>>>
             GetBooksInOrder([FromQuery] string? order)
         {
-            return await _bookBLL.GetAllBooksInOrder(order);
+            ResponseDTO<List<BookRatingAvgReviewCntDTO>> DTObookResponse
+                = await _bookBLL.GetAllBooksInOrder(order);
+            return DTObookResponse.StatusCode switch
+            {
+                HttpStatusCode.OK => Ok(DTObookResponse.Data),
+                _ => throw new Exception(),
+            };
         }
 
-        // ### 2
+        // ### 2. Get top 10 books with high rating and number of reviews greater than 10.
+        // You can filter books by specifying genre. Order by rating.
         // GET: api/Books/recommended?genre=<string>
         [HttpGet("recommended")]
         public async Task<ActionResult<List<BookRatingAvgReviewCntDTO>>>
             GetTop10HighestRatedAnd10MoreReviewsBooksByGenre([FromQuery] string? genre)
         {
-            return await _bookBLL.GetTop10HighestAnd10MoreReviewsRatedBooksByGenre(genre);
+            ResponseDTO<List<BookRatingAvgReviewCntDTO>> DTObookResponse
+                = await _bookBLL.GetTopRatedBooks(10, 10, genre);
+            return DTObookResponse.StatusCode switch
+            {
+                HttpStatusCode.OK => Ok(DTObookResponse.Data),
+                _ => throw new Exception(),
+            };
         }
 
-        // ### 3
+        // ### 3. Get book details with the list of reviews.
         // GET: api/Books/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<List<BookRatingAvgReviewCntDTO>>>
+        public async Task<ActionResult<BookRatingAvgReviewListDTO>>
             GetBooksWithRatingAndReviewList(long id)
         {
-            throw new NotImplementedException();
+            ResponseDTO<BookRatingAvgReviewListDTO> DTObookResponse
+                = await _bookBLL.GetBooksScoreAvgReviewList(id);
+            return DTObookResponse.StatusCode switch
+            {
+                HttpStatusCode.OK => Ok(DTObookResponse.Data),
+                HttpStatusCode.NotFound => NotFound(DTObookResponse.Data),
+                _ => throw new Exception(),
+            };
         }
 
-        // ### 4
+        // ### 4. Delete a book using a secret key. Save the secret key in the config of your application.
+        // Compare this key with a query param
         // DELETE: api/Books/{id}?secret=<string>
         [HttpDelete("{id}")]
-        public async Task<ActionResult<List<BookRatingAvgReviewCntDTO>>>
-            DeleteBookSecret(long id, [FromQuery] string? secret)
+        public async Task<ActionResult<IdResponseDTO>> DeleteBookSecret(
+            long id, [FromQuery] string? secret)
         {
-            throw new NotImplementedException();
+            if (secret == null || secret != _configuration.GetValue<string>("secret"))
+            {
+                return BadRequest(new IdResponseDTO { Id = id });
+            }
+            ResponseDTO<IdResponseDTO> idOrEmptyResponse = await _bookBLL.DeleteBook(id);
+            return idOrEmptyResponse.StatusCode switch
+            {
+                HttpStatusCode.NoContent => NoContent(),
+                HttpStatusCode.NotFound => NotFound(idOrEmptyResponse.Data),
+                _ => throw new Exception(),
+            };
         }
 
-        // ### 5
-        // TODO receive image and save in base64 format
+        // ### 5. Save a new book.
         // POST: api/Books/save
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("save")]
         public async Task<ActionResult<BookDTO>> PostBook(BookDTO book)
         {
-            // TODO return NotFound if book doesn't exist in DB
-            // TODO add IsNew to Book model and check if it is new,
-            // so we can return appropriate status code
-            return await _bookBLL.SaveBook(book);
+            ResponseDTO<BookDTO> DTObookResponse = await _bookBLL.SaveBook(book);
+            return DTObookResponse.StatusCode switch
+            {
+                HttpStatusCode.OK => Ok(DTObookResponse.Data),
+                HttpStatusCode.Created => Created(nameof(DTObookResponse.Data), DTObookResponse.Data),
+                HttpStatusCode.BadRequest => BadRequest(DTObookResponse.Data),
+                HttpStatusCode.NotFound => NotFound(DTObookResponse.Data),
+                _ => throw new Exception(),
+            };
         }
 
-        // TODO ### 6
+        // ### 6. Save a review for the book.
         // PUT: api/Books/5/review
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}/review")]
         public async Task<ActionResult<IdResponseDTO>> SaveReview(long id, ReviewContentDTO review)
         {
-            ActionResult<IdResponseDTO> reviewDTO;
-            try
+            ResponseDTO<IdResponseDTO> DTOreview = await _reviewBLL.ReviewBook(id, review);
+
+            return DTOreview.StatusCode switch
             {
-                reviewDTO = await _reviewBLL.ReviewBook(id, review);
-            }
-            catch (ValidationFailedException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            return reviewDTO;
+                HttpStatusCode.Created => Created(nameof(DTOreview.Data), DTOreview.Data),
+                HttpStatusCode.BadRequest => BadRequest(DTOreview.Data),
+                HttpStatusCode.NotFound => NotFound(DTOreview.Data),
+                _ => throw new Exception(),
+            };
         }
 
-        // TODO ### 7
+        // ### 7. Rate a book.
         // PUT: api/Books/5/rate
         [HttpPut("{id}/rate")]
-        public async Task<ActionResult<RatingDTO>> RateBook(long id, RatingScoreDTO ratingScoreDTO)
+        public async Task<ActionResult<RatingDTO>> RateBook(long id, RatingScoreDTO DTOratingScore)
         {
-            ActionResult<RatingDTO> ratingDTO;
-            try
+            ResponseDTO<RatingDTO> DTOrating = await _ratingBLL.RateBook(id, DTOratingScore);
+
+            return DTOrating.StatusCode switch
             {
-                ratingDTO = await _ratingBLL.RateBook(id, ratingScoreDTO);
-            }
-            catch (ValidationFailedException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            return ratingDTO;
+                HttpStatusCode.Created => Created(nameof(DTOrating.Data), DTOrating.Data),
+                HttpStatusCode.BadRequest => BadRequest(DTOrating.Data),
+                HttpStatusCode.NotFound => NotFound(DTOrating.Data),
+                _ => throw new Exception(),
+            };
         }
 
-        //    // GET: api/Books/5
-        //    [HttpGet("{id}")]
-        //    public async Task<ActionResult<Book>> GetBook(long id)
-        //    {
-        //        var book = await _context.BookItems.FindAsync(id);
-
-        //        if (book == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        return book;
-        //    }
-
-        //    // PUT: api/Books/5
-        //    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //    [HttpPut("{id}")]
-        //    public async Task<IActionResult> PutBook(long id, Book book)
-        //    {
-        //        if (id != book.Id)
-        //        {
-        //            return BadRequest();
-        //        }
-
-        //        _context.Entry(book).State = EntityState.Modified;
-
-        //        try
-        //        {
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!BookExists(id))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-
-        //        return NoContent();
-        //    }
-
-        //    // DELETE: api/Books/5
-        //    [HttpDelete("{id}")]
-        //    public async Task<IActionResult> DeleteBook(long id)
-        //    {
-        //        var book = await _context.BookItems.FindAsync(id);
-        //        if (book == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        _context.BookItems.Remove(book);
-        //        await _context.SaveChangesAsync();
-
-        //        return NoContent();
-        //    }
-
-        //    private bool BookExists(long id)
-        //    {
-        //        return _context.BookItems.Any(e => e.Id == id);
-        //    }
+        [HttpGet("throw")]
+        public IActionResult Throw() =>
+            throw new Exception("Sample exception.");
     }
 }

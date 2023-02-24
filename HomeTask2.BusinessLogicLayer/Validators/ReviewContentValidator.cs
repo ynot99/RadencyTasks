@@ -7,6 +7,8 @@ namespace HomeTask2.BusinessLogicLayer.Validators
     {
         public ReviewContentValidator()
         {
+            RuleFor(review => review.Message).NotEmpty();
+            RuleFor(review => review.Reviewer).NotEmpty();
         }
     }
 }

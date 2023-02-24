@@ -7,7 +7,8 @@ namespace HomeTask2.BusinessLogicLayer.Validators
     {
         public RatingScoreValidator()
         {
-            RuleFor(rating => rating.Score).NotEmpty().GreaterThan(0).LessThanOrEqualTo(5);
+            RuleFor(rating => rating.Score)
+                .NotEmpty().GreaterThan(0).LessThanOrEqualTo(5);
         }
     }
 }

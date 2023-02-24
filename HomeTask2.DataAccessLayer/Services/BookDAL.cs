@@ -16,10 +16,62 @@ namespace HomeTask2.DataAccessLayer.Services
             _context = context;
         }
 
-        private static IQueryable<BookRatingAvgReviewCntDTO>
-            ExtendQuery(IQueryable<Book> query)
+        public async Task<Book> GetById(long id)
         {
-            // TODO Maybe we want to return entities combined instead of DTO
+            Book? existingBook = await _context.Books.FindAsync(id);
+            if (existingBook == null)
+            {
+                throw new EntityNotFoundException();
+            }
+            return existingBook;
+        }
+
+        public async Task<Book> Update(BookDTO DTObook)
+        {
+            Book? existingBook = await _context.Books.FindAsync(DTObook.Id);
+            if (existingBook == null)
+            {
+                throw new EntityNotFoundException();
+            }
+            existingBook.Title = DTObook.Title;
+            existingBook.Cover = DTObook.Cover;
+            existingBook.Content = DTObook.Content;
+            existingBook.Author = DTObook.Author;
+            existingBook.Genre = DTObook.Genre;
+            await _context.SaveChangesAsync();
+            return existingBook;
+        }
+
+        public async Task<Book> Create(BookDTO DTObook)
+        {
+            Book newBook = new()
+            {
+                Id = 0,
+                Author = DTObook.Author,
+                Content = DTObook.Content,
+                Cover = DTObook.Cover,
+                Genre = DTObook.Genre,
+                Title = DTObook.Title
+            };
+            _context.Books.Add(newBook);
+            await _context.SaveChangesAsync();
+            return newBook;
+        }
+
+        public async Task Delete(long id)
+        {
+            Book? existingBook = await _context.Books.FindAsync(id);
+            if (existingBook == null)
+            {
+                throw new EntityNotFoundException();
+            }
+
+            _context.Books.Remove(existingBook);
+            await _context.SaveChangesAsync();
+        }
+
+        private static IQueryable<BookRatingAvgReviewCntDTO> ExtendQuery(IQueryable<Book> query)
+        {
             return query
                 .Select(book => new BookRatingAvgReviewCntDTO
                 {
@@ -27,99 +79,76 @@ namespace HomeTask2.DataAccessLayer.Services
                     Title = book.Title,
                     Author = book.Author,
                     ReviewsNumber = book.Reviews != null ? book.Reviews.Count : 0,
-                    // DANGER I was forced to use null! forgiving operators, otherwise
-                    // the app crashes on .OrderByDescending(book => book.Rating)
-                    Rating = book.Ratings!.Any() ? book.Ratings!.Average(book => book.Score) : 0
+                    // DANGER null!
+                    Rating = book.Ratings!.Any() ? book.Ratings!.Average(rating => rating.Score) : 0
+                    // Idk why, but this throws
+                    // System.InvalidOperationException: Sequence contains no elements
+                    //Rating = book.Ratings != null && book.Ratings.Any() 
+                    //    ? book.Ratings.Average(book => book.Score) : 0
                 });
         }
 
-        public async Task<List<BookRatingAvgReviewCntDTO>> GetAllInOrder(string? order)
-        {
-            IQueryable<BookRatingAvgReviewCntDTO> query
-                = ExtendQuery(_context.Books);
-
-            return order switch
-            {
-                "author" => await query.OrderBy(book => book.Author).ToListAsync(),
-                "title" => await query.OrderBy(book => book.Title).ToListAsync(),
-                _ => await query.ToListAsync(),
-            };
-        }
-
-        public async Task<List<BookRatingAvgReviewCntDTO>>
-            GetLimitByGenreAndMoreThanReviews(int limit, long reviewsCount, string? genre)
+        public async Task<List<BookRatingAvgReviewCntDTO>> TakeBooksByCntRatingAvgByReviewCntByGenre(
+            int bookCount, long reviewCount, string? genre)
         {
             return await ExtendQuery(_context.Books
                 .Where(book =>
-                    (genre == null || book.Genre == genre)
-                    && book.Reviews != null && book.Reviews.Count > reviewsCount))
+                        (genre == null || book.Genre == genre)
+                        // DANGER null! to hide warn in console logs
+                        && book.Reviews!.Any() == true && book.Reviews!.Count > reviewCount
+                        )
+                )
                 .OrderByDescending(book => book.Rating)
-                .Take(limit).ToListAsync();
+                .Take(bookCount)
+                .ToListAsync();
         }
 
-        // BAD I shouldn't do manual mapping here,
-        // database processes need to be divided by their service files
-        public Task<BookWithRatingAndReviewListDTO>
-            GetByIdDetailedWithRatingAndReviews(long id)
+        public async Task<List<BookRatingAvgReviewCntDTO>> GetAllRatingAvgReviewCntInOrder(string? order)
         {
-            Book? existingBook = _context.Books.FirstOrDefault(book => book.Id == id);
+            IQueryable<BookRatingAvgReviewCntDTO> query = ExtendQuery(_context.Books);
+
+            return order switch
+            {
+                "title" => await query.OrderBy(book => book.Title).ToListAsync(),
+                "author" => await query.OrderBy(book => book.Author).ToListAsync(),
+                _ => await query.ToListAsync()
+            };
+        }
+
+        public async Task<BookRatingAvgReviewListDTO> GetByIdDetailedWithRatingAndReviews(
+            long id)
+        {
+            Book? existingBook = await _context.Books
+                .Include(book => book.Ratings)
+                .Include(book => book.Reviews)
+                .FirstOrDefaultAsync(book => book.Id == id);
+
             if (existingBook == null)
             {
                 throw new EntityNotFoundException();
             }
-            BookWithRatingAndReviewListDTO detailedBook = new BookWithRatingAndReviewListDTO()
+            BookRatingAvgReviewListDTO detailedBook = new()
             {
                 Id = existingBook.Id,
                 Author = existingBook.Author,
                 Content = existingBook.Content,
                 Cover = existingBook.Cover,
                 Title = existingBook.Title,
-                Rating = existingBook.Ratings != null
-                    ? existingBook.Ratings.Average(review => review.Score) : 0,
+                // DANGER null!
+                Rating = existingBook.Ratings!.Any() ?
+                    existingBook.Ratings!.Average(review => review.Score) : 0,
                 Reviews = existingBook.Reviews != null
                     ? existingBook.Reviews.Select(review =>
-                    new ReviewListForBookDTO
+                    new ReviewForBookDTO
                     {
                         Id = review.Id,
                         Message = review.Message,
                         Reviewer = review.Reviewer,
                     }
                     ).ToList()
-                    : new List<ReviewListForBookDTO>(),
+                    : new List<ReviewForBookDTO>(),
             };
             return detailedBook;
-        }
-
-        public async Task<Book> SaveOrModify(BookDTO book)
-        {
-            if (book.Id == 0)
-            {
-                Book newBook = new()
-                {
-                    Id = 0,
-                    Author = book.Author,
-                    Content = book.Content,
-                    Cover = book.Cover,
-                    Genre = book.Genre,
-                    Title = book.Title
-                };
-                _context.Books.Add(newBook);
-                await _context.SaveChangesAsync();
-                return newBook;
-            }
-            else
-            {
-                Book? existingBook = await _context.Books.FindAsync(book.Id);
-                if (existingBook == null)
-                    throw new EntityNotFoundException();
-                existingBook.Title = book.Title;
-                existingBook.Cover = book.Cover;
-                existingBook.Content = book.Content;
-                existingBook.Author = book.Author;
-                existingBook.Genre = book.Genre;
-                await _context.SaveChangesAsync();
-                return existingBook;
-            }
         }
     }
 }
