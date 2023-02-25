@@ -16,16 +16,6 @@ namespace HomeTask2.DataAccessLayer.Services
             _context = context;
         }
 
-        public async Task<Book> GetById(long id)
-        {
-            Book? existingBook = await _context.Books.FindAsync(id);
-            if (existingBook == null)
-            {
-                throw new EntityNotFoundException();
-            }
-            return existingBook;
-        }
-
         public async Task<Book> Update(BookDTO DTObook)
         {
             Book? existingBook = await _context.Books.FindAsync(DTObook.Id);
