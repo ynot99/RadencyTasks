@@ -1,0 +1,18 @@
+<mat-card>
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+    <mat-tab label="All">
+      <mat-grid-list cols="2" rowHeight="2:1">
+        <mat-grid-tile *ngFor="let item of [1, 2, 3, 4]">
+          <app-book-list-item></app-book-list-item>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </mat-tab>
+    <mat-tab label="Recommended">
+      <mat-grid-list cols="2" rowHeight="2:1">
+        <mat-grid-tile *ngFor="let item of [1, 2, 3, 4]">
+          <app-book-list-item></app-book-list-item>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>
