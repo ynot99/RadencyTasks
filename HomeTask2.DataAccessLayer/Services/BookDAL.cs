@@ -78,6 +78,7 @@ namespace HomeTask2.DataAccessLayer.Services
                     Id = book.Id,
                     Title = book.Title,
                     Author = book.Author,
+                    Cover = book.Cover,
                     ReviewsNumber = book.Reviews != null ? book.Reviews.Count : 0,
                     // DANGER null!
                     Rating = book.Ratings!.Any() ? book.Ratings!.Average(rating => rating.Score) : 0

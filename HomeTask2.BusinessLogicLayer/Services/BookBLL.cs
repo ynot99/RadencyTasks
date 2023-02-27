@@ -23,6 +23,25 @@ namespace HomeTask2.BusinessLogicLayer.Services
             _validator = validator;
         }
 
+        public async Task<ResponseDTO<BookDTO>> GetBookById(long bookId)
+        {
+            BookDTO existingBook;
+            try
+            {
+                existingBook = _mapper.Map<Book, BookDTO>(await _bookDAL.GetById(bookId));
+            }
+            catch (EntityNotFoundException ex)
+            {
+                return new ResponseDTO<BookDTO>(
+                    HttpStatusCode.NotFound, ex.Message);
+            }
+
+            return new ResponseDTO<BookDTO>(
+                HttpStatusCode.OK,
+                "Successfully retrieved a book with rating and reviews.",
+                existingBook);
+        }
+
         public async Task<ResponseDTO<List<BookRatingAvgReviewCntDTO>>> GetAllBooksInOrder(string? order)
         {
             // BAD should DAL return DTO?

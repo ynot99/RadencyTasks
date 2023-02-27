@@ -1,11 +1,9 @@
-import { IBookReview } from './book-review.interface';
-
 export interface IBookData {
+  id: number;
   title: string;
   cover: string;
-  content: string;
   author: string;
   genre: string;
-  reviews: IBookReview[];
+  reviewsNumber: number;
   rating: number;
 }

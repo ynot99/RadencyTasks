@@ -1,0 +1,52 @@
+<div class="dialog-header">
+  <span mat-dialog-title class="dialog-title">Details</span>
+  <div mat-dialog-actions class="dialog-close">
+    <button matSuffix mat-icon-button mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+<mat-divider></mat-divider>
+<mat-dialog-content>
+  <ng-container *ngIf="bookData$ | async as bookData; else loading">
+    <div class="dialog-info-container">
+      <div class="dialog-info-container__left">
+        <div class="dialog-info-container__image">
+          <img [src]="bookData.cover" [alt]="bookData.title" />
+        </div>
+        <div class="dialog-info-container__stats">
+          <span>Rating: 4.2</span>
+          <span>Review: 15</span>
+        </div>
+      </div>
+      <div class="dialog-info-container__right">
+        <h3 class="dialog-info-container__title">{{ bookData.title }}</h3>
+        <span>{{ bookData.author }}</span>
+        <div class="dialog-info-container__content">
+          <p>{{ bookData.content }}</p>
+        </div>
+      </div>
+    </div>
+    <ul class="dialog-reviews-container">
+      <li
+        class="dialog-reviews-container__item"
+        *ngFor="let review of bookData.reviews"
+      >
+        <mat-divider class="dialog-reviews-container__divider"></mat-divider>
+        <span>{{ review.reviewer }}</span>
+        <p>
+          {{ review.message }}
+        </p>
+      </li>
+    </ul>
+  </ng-container>
+  <ng-template #loading>
+    <mat-progress-spinner
+      class="example-margin"
+      [style]="{ margin: '0 auto' }"
+      [color]="'primary'"
+      [mode]="'indeterminate'"
+    >
+    </mat-progress-spinner>
+  </ng-template>
+</mat-dialog-content>
