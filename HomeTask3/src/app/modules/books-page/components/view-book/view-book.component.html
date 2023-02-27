@@ -15,8 +15,8 @@
           <img [src]="bookData.cover" [alt]="bookData.title" />
         </div>
         <div class="dialog-info-container__stats">
-          <span>Rating: 4.2</span>
-          <span>Review: 15</span>
+          <span>Rating: {{ bookData.rating | number : ".1-1" }}</span>
+          <span>Review: {{ bookData.reviews.length }}</span>
         </div>
       </div>
       <div class="dialog-info-container__right">
