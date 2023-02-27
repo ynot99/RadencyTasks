@@ -1,27 +1,31 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using HomeTask1;
+using HomeTask1.JSONModels;
 using System.Globalization;
+using System.Text.Json;
 
-string usersCSVDataFolderPath;
-string processedUsersCSVDataFolderPath;
+// BAD do not just handle strings!
+string usersCsvDataFolderPath; // convert to input model
+string processedUsersCsvDataFolderPath; // convert to output model
 try
 {
-    usersCSVDataFolderPath = AppConfigExstractor.ExtractDirectoryPath("UsersCSVDataFolder");
-    processedUsersCSVDataFolderPath = AppConfigExstractor.ExtractDirectoryPath("ProcessedUsersCSVDataFolder");
+    usersCsvDataFolderPath = AppConfigExstractor.ExtractDirectoryPath("UsersCSVDataFolder");
+    processedUsersCsvDataFolderPath = AppConfigExstractor.ExtractDirectoryPath("ProcessedUsersCSVDataFolder");
 }
-catch (ArgumentNullException e)
+catch (ArgumentNullException ex)
 {
-    Console.WriteLine(e.Message);
+    Console.WriteLine(ex.Message);
     return;
 }
-catch (DirectoryNotFoundException e)
+catch (DirectoryNotFoundException ex)
 {
-    Console.WriteLine(e.Message);
+    Console.WriteLine(ex.Message);
     return;
 }
+Input input = new(usersCsvDataFolderPath);
 
-FileSystemWatcher watcher = new(usersCSVDataFolderPath)
+FileSystemWatcher watcher = new(input.Path)
 {
     Filter = "*.csv",
     IncludeSubdirectories = true,
@@ -29,7 +33,7 @@ FileSystemWatcher watcher = new(usersCSVDataFolderPath)
 };
 
 // TODO it is very risky move, it needs to be tested,
-// if path cannot be remove from this list, we're screwed
+// if path cannot be removed from this list, we're screwed
 List<string> pathsInProcess = new();
 
 watcher.Changed += async (sender, e) =>
@@ -38,6 +42,8 @@ watcher.Changed += async (sender, e) =>
     {
         return;
     }
+
+    // MARK maybe not necessary to use Task.Run here
     await Task.Run(() =>
     {
         if (pathsInProcess.Find(pathInP => pathInP == e.FullPath) != null)
@@ -64,18 +70,59 @@ watcher.Changed += async (sender, e) =>
         {
             Console.WriteLine($"The file \"{e.FullPath}\" is being processed {DateTime.Now}");
 
+            Dictionary<string, CityObj> cityDictionary = new();
+
             csv.Context.RegisterClassMap<MyCsvClassMap>();
-            csv.Read();
-            csv.ReadHeader();
-            while (csv.Read())
+
+            Payer payer = new();
+            IEnumerable<Payer> records = csv.EnumerateRecords(payer);
+            foreach (Payer record in records)
             {
-                Payer? record = csv.GetRecord<Payer>();
-                if (record == null)
+                // TODO count as a non valid record
+                if (record.Address == null || record.Service == null) continue;
+                string city = record.Address.Split(',')[0];
+                if (!cityDictionary.ContainsKey(city))
                 {
-                    Console.WriteLine("WOAH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    continue;
+                    cityDictionary.Add(city, new CityObj
+                    {
+                        City = city,
+                        Total = 0,
+                        ServiceDictionary = new Dictionary<string, ServiceObj>()
+                    });
                 }
+
+                cityDictionary[city].ServiceDictionary ??= new Dictionary<string, ServiceObj>();
+
+                if (!cityDictionary[city].ServiceDictionary.ContainsKey(record.Service))
+                {
+                    cityDictionary[city].ServiceDictionary.Add(record.Service, new ServiceObj()
+                    {
+                        Name = record.Service,
+                        Total = 0,
+                        Payers = new List<PayerObj>()
+                    }
+                    );
+                    cityDictionary[city].Total++;
+                }
+
+                cityDictionary[city].ServiceDictionary[record.Service].Payers.Add(new PayerObj()
+                {
+                    Name = $"{record.FirstName} {record.LastName}",
+                    AccountNumber = record.AccountNumber,
+                    Date = record.Date,
+                    Payment = record.Payment
+                });
+                cityDictionary[city].ServiceDictionary[record.Service].Total++;
             }
+
+            Console.WriteLine($"Serializing to JSON... {DateTime.Now}");
+
+            const string fileName = "ProcessedCSV.json";
+            using FileStream createStream
+                    = File.Create(Path.Combine(processedUsersCsvDataFolderPath, fileName));
+
+            JsonSerializer.Serialize(createStream, cityDictionary.Values.ToList());
+            Console.WriteLine(Path.Combine(processedUsersCsvDataFolderPath, fileName));
         }
         pathsInProcess.Remove(e.FullPath);
         Console.WriteLine($"The file \"{e.FullPath}\" has done processing {DateTime.Now}");
