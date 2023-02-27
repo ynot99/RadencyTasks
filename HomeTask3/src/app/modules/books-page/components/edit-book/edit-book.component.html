@@ -1,0 +1,154 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      <h2>Add Book</h2>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-divider></mat-divider>
+  <form [formGroup]="form" (ngSubmit)="onSubmit(fileInput)">
+    <mat-card-content>
+      <div class="form-container">
+        <div class="form-container__left-column">
+          <mat-form-field appearance="outline" floatLabel="always">
+            <mat-label>Title</mat-label>
+            <input
+              matInput
+              placeholder="Title"
+              formControlName="title"
+              required
+            />
+            <mat-error *ngIf="form.get('title')?.hasError('required')">
+              Title is required
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field
+            appearance="outline"
+            (click)="fileInput.click()"
+            floatLabel="always"
+          >
+            <input
+              type="file"
+              #fileInput
+              accept=".jpeg,.jpg,.png"
+              (change)="onFileSelected(fileInput)"
+              hidden
+              required
+            />
+            <mat-label>Cover</mat-label>
+            <input
+              matInput
+              readonly="true"
+              tabindex="-1"
+              formControlName="coverName"
+              placeholder="File name"
+              [value]="selectedFileName"
+              required
+            />
+            <button
+              mat-raised-button
+              matSuffix
+              type="button"
+              [style]="{ padding: '28px 16px' }"
+            >
+              Choose...
+            </button>
+            <mat-error *ngIf="form.get('coverName')?.hasError('required')">
+              Cover is required
+            </mat-error>
+            <mat-hint [align]="'end'">.jpeg, .jpg, .png </mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="outline" floatLabel="always">
+            <mat-label>Genre</mat-label>
+            <input
+              matInput
+              #nextInput
+              placeholder="Genre"
+              formControlName="genre"
+              required
+            />
+            <mat-error *ngIf="form.get('genre')?.hasError('required')">
+              Genre is required
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" floatLabel="always">
+            <mat-label>Author</mat-label>
+            <input
+              matInput
+              placeholder="Author"
+              formControlName="author"
+              required
+            />
+            <mat-error *ngIf="form.get('author')?.hasError('required')">
+              Author is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-container__right-column">
+          <mat-form-field appearance="outline" floatLabel="always">
+            <mat-label>Content</mat-label>
+            <textarea
+              matInput
+              #textarea
+              placeholder="Content"
+              formControlName="content"
+              minlength="10"
+              maxlength="1000"
+              rows="11"
+              required
+            ></textarea>
+            <mat-hint [align]="'start'">Min 10 characters</mat-hint>
+            <mat-hint [align]="'end'"
+              >{{ textarea.value.length }}/{{ textarea.maxLength }}</mat-hint
+            >
+            <mat-error *ngIf="form.get('content')?.hasError('required')">
+              Content is required
+            </mat-error>
+            <mat-error
+              *ngIf="
+                form.get('content')?.hasError('minlength') &&
+                form.get('content')?.touched
+              "
+            >
+              Content must be at least 10 characters long
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions class="justify-center">
+      <button
+        mat-raised-button
+        *ngIf="!isEditMode"
+        color="primary"
+        type="submit"
+        class="btn-action-space btn-action-more-padding"
+      >
+        <ng-container *ngIf="!isFormLoading"> Add </ng-container>
+        <ng-container *ngIf="isFormLoading">
+          <mat-spinner></mat-spinner>
+        </ng-container>
+      </button>
+      <button
+        mat-raised-button
+        *ngIf="isEditMode"
+        color="warn"
+        type="submit"
+        class="btn-action-space btn-action-more-padding"
+      >
+        <ng-container *ngIf="!isFormLoading"> Edit </ng-container>
+        <ng-container *ngIf="isFormLoading">
+          <mat-spinner></mat-spinner>
+        </ng-container>
+      </button>
+      <button
+        mat-raised-button
+        color="accent"
+        type="button"
+        (click)="formReset(fileInput)"
+        class="btn-action-more-padding"
+      >
+        Clear
+      </button>
+    </mat-card-actions>
+  </form>
+</mat-card>

@@ -1,0 +1,10 @@
+<ul class="book-list">
+  <ng-container *ngIf="books$ | async as books; else loading">
+    <li class="book-list__item" *ngFor="let book of books$ | async">
+      <app-book-list-item [book]="book"></app-book-list-item>
+    </li>
+  </ng-container>
+</ul>
+<ng-template #loading>
+  <mat-spinner></mat-spinner>
+</ng-template>
