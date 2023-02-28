@@ -11,7 +11,7 @@ namespace HomeTask1
             {
                 throw new ArgumentNullException($"Configuration \"${appConfigKey}\" is missing in App.config file.");
             }
-            else if (!Directory.Exists(directoryPath))
+            if (!Directory.Exists(directoryPath))
             {
                 throw new DirectoryNotFoundException($"Configuration \"{appConfigKey}\" directory {directoryPath} doesn't exist.");
             }

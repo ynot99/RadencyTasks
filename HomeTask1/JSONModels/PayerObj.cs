@@ -4,8 +4,7 @@
     {
         public string? Name { get; set; }
         public decimal Payment { get; set; }
-        // TODO change to DateOnly
-        public DateTime Date { get; set; }
+        public string? Date { get; set; }
         public long AccountNumber { get; set; }
     }
 }

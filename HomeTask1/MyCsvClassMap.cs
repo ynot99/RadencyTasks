@@ -2,7 +2,7 @@
 
 namespace HomeTask1
 {
-    public class MyCsvClassMap : ClassMap<Payer>
+    public sealed class MyCsvClassMap : ClassMap<Payer>
     {
         public MyCsvClassMap()
         {
