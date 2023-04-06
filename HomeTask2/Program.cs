@@ -1,9 +1,20 @@
 using HomeTask2.BusinessLogicLayer;
 using Microsoft.AspNetCore.HttpLogging;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 builder.Services.AddHttpLogging(logging =>
 {
@@ -38,6 +49,8 @@ else
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 

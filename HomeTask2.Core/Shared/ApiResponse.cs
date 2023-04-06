@@ -10,6 +10,5 @@ namespace HomeTask2.Core.Shared
             Data = data;
             Message = message;
         }
-
     }
 }

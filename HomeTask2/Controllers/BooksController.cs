@@ -27,6 +27,13 @@ namespace HomeTask2.Controllers
             _configuration = configuration;
         }
 
+        [HttpGet("onlybook/{id}")]
+        public async Task<ActionResult<ApiResponse<BookDTO>>>
+            GetBooksInOrder(long id)
+        {
+            return GenerateResponse(await _bookBLL.GetBookById(id));
+        }
+
         // ### 1. Get all books. Order by provided value (title or author).
         // GET: api/Books?order=author|title
         [HttpGet]

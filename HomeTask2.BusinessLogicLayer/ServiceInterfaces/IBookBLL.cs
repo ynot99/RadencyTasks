@@ -4,6 +4,7 @@ namespace HomeTask2.BusinessLogicLayer.ServiceInterfaces
 {
     public interface IBookBLL
     {
+        public Task<ResponseDTO<BookDTO>> GetBookById(long bookId);
         public Task<ResponseDTO<List<BookRatingAvgReviewCntDTO>>> GetAllBooksInOrder(string? order);
         public Task<ResponseDTO<List<BookRatingAvgReviewCntDTO>>> GetTopRatedBooks(
             int bookCount, long reviewCount, string? genre);
