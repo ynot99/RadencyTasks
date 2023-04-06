@@ -9,7 +9,6 @@ namespace HomeTask2.DataAccessLayer.ServiceInterfaces
         public Task<List<BookRatingAvgReviewCntDTO>> TakeBooksByCntRatingAvgByReviewCntByGenre(
             int bookCount, long reviewCount, string? genre);
         public Task<BookRatingAvgReviewListDTO> GetByIdDetailedWithRatingAndReviews(long id);
-        public Task<Book> GetById(long id);
         public Task<Book> Update(BookDTO DTObook);
         public Task<Book> Create(BookDTO DTObook);
         public Task Delete(long id);
