@@ -1,0 +1,28 @@
+<mat-card class="book-list-item">
+  <div class="book-list-item__left-container">
+    <img class="book-list-item__image" [src]="book.cover" />
+  </div>
+  <div class="book-list-item__middle-container">
+    <h3 class="book-list-item__book-title">{{ book.title }}</h3>
+    <div class="book-list-item__stat-numbers">
+      <span>Rating: {{ book.rating | number : ".1-1" }}</span>
+      <span>Review: {{ book.reviewsNumber }}</span>
+    </div>
+  </div>
+  <div class="book-list-item__right-container">
+    <button
+      class="book-list-item__button"
+      mat-raised-button
+      (click)="openDialogWithBookInfo()"
+    >
+      <mat-icon>visibility</mat-icon>
+    </button>
+    <button
+      class="book-list-item__button"
+      mat-raised-button
+      (click)="sendData()"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
+</mat-card>

@@ -1,0 +1,91 @@
+.dialog-header {
+  position: relative;
+}
+
+.dialog-close {
+  position: absolute;
+  top: -3px;
+  right: 0;
+}
+
+.dialog-title {
+  text-align: center;
+}
+
+.dialog-info-container {
+  display: flex;
+
+  &__title {
+    margin-top: 0;
+    margin-bottom: 5px;
+  }
+
+  &__content {
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: scroll;
+
+    > p {
+      margin-top: 0;
+    }
+  }
+
+  &__image {
+    margin-bottom: 10px;
+
+    > img {
+      width: 100%;
+    }
+  }
+
+  &__stats {
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  &__left {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px;
+  }
+
+  &__right {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+}
+
+.dialog-reviews-container {
+  &__divider {
+    margin-bottom: 20px;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .dialog-info-container {
+    flex-direction: column;
+
+    &__right {
+      width: 100%;
+    }
+
+    &__left {
+      width: 100%;
+    }
+
+    &__stats {
+      margin-bottom: 20px;
+    }
+
+    &__image {
+      margin: 0 auto 10px;
+    }
+
+    &__left {
+      margin-right: 0;
+    }
+  }
+}
