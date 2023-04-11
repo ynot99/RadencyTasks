@@ -4,15 +4,5 @@
   </mat-card-header>
   <app-edit-book></app-edit-book>
   <div class="vertical-indent"></div>
-  <mat-card>
-    <mat-tab-group
-      mat-stretch-tabs="false"
-      mat-align-tabs="start"
-      [style]="{ minHeight: '400px', maxHeight: '400px' }"
-    >
-      <mat-tab *ngFor="let tab of tabs" [label]="tab.label">
-        <app-book-list [fetchurl]="tab.fetchurl"></app-book-list>
-      </mat-tab>
-    </mat-tab-group>
-  </mat-card>
+  <app-book-tabs-window></app-book-tabs-window>
 </div>

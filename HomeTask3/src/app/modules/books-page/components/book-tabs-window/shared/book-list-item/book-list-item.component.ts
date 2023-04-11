@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { IBookData } from 'src/app/modules/shared/interfaces/book-data.interface';
-import { FormService } from '../../../services/form.service';
-import { ViewBookComponent } from '../../view-book/view-book.component';
+import { FormService } from '../../../../services/form.service';
+import { ViewBookComponent } from '../../../view-book/view-book.component';
 
 @Component({
   selector: 'app-book-list-item',
