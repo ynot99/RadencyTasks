@@ -15,8 +15,11 @@ import { MatTabsModule } from '@angular/material/tabs';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { BookListItemComponent } from './components/book-list/book-list-item/book-list-item.component';
-import { BookListComponent } from './components/book-list/book-list.component';
+import { BookListBaseComponent } from './components/book-tabs-window/book-list-base/book-list-base.component';
+import { BookListComponent } from './components/book-tabs-window/book-list/book-list.component';
+import { BookTabsWindowComponent } from './components/book-tabs-window/book-tabs-window.component';
+import { RecommendedBookListComponent } from './components/book-tabs-window/recommended-book-list/recommended-book-list.component';
+import { BookListItemComponent } from './components/book-tabs-window/shared/book-list-item/book-list-item.component';
 import { BooksPageComponent } from './components/books-page.component';
 import { EditBookComponent } from './components/edit-book/edit-book.component';
 import { ViewBookComponent } from './components/view-book/view-book.component';
@@ -31,6 +34,9 @@ import { SignalService } from './services/signal.service';
     BookListItemComponent,
     EditBookComponent,
     ViewBookComponent,
+    BookTabsWindowComponent,
+    RecommendedBookListComponent,
+    BookListBaseComponent,
   ],
   imports: [
     CommonModule,

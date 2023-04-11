@@ -1,0 +1,14 @@
+<mat-card>
+  <mat-tab-group
+    mat-stretch-tabs="false"
+    mat-align-tabs="start"
+    [style]="{ minHeight: '400px', maxHeight: '400px' }"
+  >
+    <mat-tab label="All">
+      <app-book-list></app-book-list>
+    </mat-tab>
+    <mat-tab label="Recommended">
+      <app-recommended-book-list></app-recommended-book-list>
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>
